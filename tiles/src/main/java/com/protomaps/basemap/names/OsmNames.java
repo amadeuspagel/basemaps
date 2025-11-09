@@ -14,61 +14,62 @@ import java.util.stream.Stream;
 
 public class OsmNames {
 
-  private OsmNames() {}
+  private OsmNames() {
+  }
 
-  private static final String[] ALLOWED_LANGS = new String[]{
-    "ar", // Arabic
-    "cs", // Czech
-    "bg", // Bulgarian
-    "da", // Danish
-    "de", // German
-    "el", // Greek
-    "en", // English
-    "es", // Spanish
-    "et", // Estonian
-    "fa", // Persian
-    "fi", // Finnish
-    "fr", // French
-    "ga", // Irish
-    "he", // Hebrew
-    "hi", // Hindi
-    "hr", // Croatian
-    "hu", // Hungarian
-    "id", // Indonesian
-    "it", // Italian
-    "ja", // Japanese
-    "ko", // Korean
-    "lt", // Lithuanian
-    "lv", // Latvian
-    "ne", // Nepali
-    "nl", // Dutch
-    "no", // Norwegian
-    "mr", // Marathi
-    "mt", // Maltese
-    "pl", // Polish
-    "pt", // Portuguese
-    "ro", // Romanian
-    "ru", // Russian
-    "sk", // Slovak
-    "sl", // Slovenian
-    "sv", // Swedish
-    "tr", // Turkish
-    "uk", // Ukrainian
-    "ur", // Urdu
-    "vi", // Vietnamese
-    "zh-Hans", // Chinese (Simplified)
-    "zh-Hant" // Chinese (Traditional)
+  private static final String[] ALLOWED_LANGS = new String[] {
+      "ar", // Arabic
+      "cs", // Czech
+      "bg", // Bulgarian
+      "da", // Danish
+      "de", // German
+      "el", // Greek
+      "en", // English
+      "es", // Spanish
+      "et", // Estonian
+      "fa", // Persian
+      "fi", // Finnish
+      "fr", // French
+      "ga", // Irish
+      "he", // Hebrew
+      "hi", // Hindi
+      "hr", // Croatian
+      "hu", // Hungarian
+      "id", // Indonesian
+      "it", // Italian
+      "ja", // Japanese
+      "ko", // Korean
+      "lt", // Lithuanian
+      "lv", // Latvian
+      "ne", // Nepali
+      "nl", // Dutch
+      "no", // Norwegian
+      "mr", // Marathi
+      "mt", // Maltese
+      "pl", // Polish
+      "pt", // Portuguese
+      "ro", // Romanian
+      "ru", // Russian
+      "sk", // Slovak
+      "sl", // Slovenian
+      "sv", // Swedish
+      "tr", // Turkish
+      "uk", // Ukrainian
+      "ur", // Urdu
+      "vi", // Vietnamese
+      "zh-Hans", // Chinese (Simplified)
+      "zh-Hant" // Chinese (Traditional)
   };
 
-  private static final Set<String> ALLOWED_LANG_SET =
-    new HashSet<>(Stream.of(ALLOWED_LANGS).map(s -> "name:" + s).toList());
+  private static final Set<String> ALLOWED_LANG_SET = new HashSet<>(
+      Stream.of(ALLOWED_LANGS).map(s -> "name:" + s).toList());
 
   public static boolean isAllowed(String osmKey) {
     return ALLOWED_LANG_SET.contains(osmKey);
   }
 
   public static FeatureCollector.Feature setOsmNames(FeatureCollector.Feature feature, SourceFeature sf,
-    int minZoom) {
+      int minZoom) {
     FontRegistry fontRegistry = FontRegistry.getInstance();
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
       var key = tag.getKey();
@@ -146,11 +147,20 @@ public class OsmNames {
         feature.setAttrWithMinzoom("name:zh-Hans", sf.getTag("name:zh"), minZoom);
       }
     }
+
+    if (sf.hasTag("wikipedia")) {
+      String wikipedia = sf.getTag("wikipedia")
+          .toString();
+      if (wikipedia.startsWith("de:")) {
+        feature.setAttrWithMinzoom("wikipedia", wikipedia, minZoom);
+      }
+    }
+
     return feature;
   }
 
   public static FeatureCollector.Feature setOsmRefs(FeatureCollector.Feature feature, SourceFeature sf,
-    int minZoom) {
+      int minZoom) {
     for (Map.Entry<String, Object> tag : sf.tags().entrySet()) {
       var key = tag.getKey();
       // Short codes (CA not Calif.)
